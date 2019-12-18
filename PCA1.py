@@ -1,3 +1,5 @@
+
+# clear; python PCA1.py;
 # -*- coding: utf-8 -*-
 """
 Created on Thu Dec 12 12:07:40 2019
@@ -32,7 +34,7 @@ def pca(X):
     X_pca = np.dot(X, eigen_vectors)
     return X_pca
 
-datafile = 'dataPCA.mat'
+datafile = 'PCAData.mat'
 points = scipy.io.loadmat( datafile )
 
 X = points['X'] 

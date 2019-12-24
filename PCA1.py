@@ -34,16 +34,19 @@ def pca(X):
     X_pca = np.dot(X, eigen_vectors)
     return [X_pca, eigen_values, eigen_vectors]
 
-def getFeatureVectors(eigenValues, eigenVectors, featureCount):
+def getFeatureMatrix(eigenValues, eigenVectors, featureCount):
 
-    featureVectors = []
+    # Take the number of features with the max values in front
+    featureMatrix = []
     featureIndexes = np.argsort(eigenValues)
     primary = np.flip(featureIndexes[-1*featureCount:])
 
     for fIndex in primary:
-        featureVectors.append(eigenVectors[fIndex])
+        featureMatrix.append(eigenVectors[fIndex])
     
-    return featureVectors
+    return np.array(featureMatrix)
+
+featureCount = 2
 
 # loading file
 # datafile = 'PCAData.mat'
@@ -57,15 +60,15 @@ X = np.delete(X, range(7), axis=1)
 print('Printing data in X...')
 print(X)
 # testing
-# X = np.array([[1, 2, 5], [3, 4, 6]])
+X = np.array([[1, 2, 5, 10], [3, 4, 6, 11], [7, 8, 9, 12]])
 m, n = X.shape
 
 print(m, n)
 original = X.copy()
 
-SumX = np.sum(X, axis =0)
-meanX = np.mean(X,axis =0)
-stdX = np.std(X,axis =0)
+SumX = np.sum(X, axis = 0)
+meanX = np.mean(X, axis = 0)
+stdX = np.std(X, axis = 0)
 
 # print(meanX)
 # print(stdX)
@@ -77,6 +80,7 @@ stdXReplicate = np.tile(stdX,(m,1))
 
 X = normalize(X,meanXReplicate,stdXReplicate)
 
+# *** PCA START *** 
 # print(X)
 # meanX = np.round(np.mean(X,axis =0),2)
 # stdX = np.std(X,axis =0)
@@ -88,15 +92,21 @@ pcaX = pcaInfo[0]
 eigenValues = pcaInfo[1]
 eigenVectors = pcaInfo[2]
 
-fVectors = getFeatureVectors(eigenValues, eigenVectors, 2)
-# print(pcaX)
+featureMatrix = getFeatureMatrix(eigenValues, eigenVectors, featureCount)
+featureMatrixT = featureMatrix.T
 
-m, n = pcaX.shape
+# We want the transformed matrix to be a row_count x 2
+transformedMatrix = (np.dot(featureMatrix, original.T)).T
+# *** PCA END *** 
+
+print(transformedMatrix)
+
+m, n = transformedMatrix.shape
 
 print(m, n)
 
-plt.scatter(pcaX[:,0], pcaX[:,1])
-plt.plot((0, fVectors[0][0]), (0, fVectors[1][0]), c='red')
-plt.plot((0, fVectors[0][1]), (0, fVectors[1][1]), c='green')
-plt.show()
+# plt.scatter(pcaX[:,0], pcaX[:,1])
+# plt.plot((0, fVectors[0][0]), (0, fVectors[1][0]), c='red')
+# plt.plot((0, fVectors[0][1]), (0, fVectors[1][1]), c='green')
+# plt.show()
 

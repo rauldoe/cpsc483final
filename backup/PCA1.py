@@ -32,54 +32,42 @@ def pca(X):
     
     # Project X onto PC space
     X_pca = np.dot(X, eigen_vectors)
-    return [X_pca, eigen_values, eigen_vectors]
+    return X_pca
 
-# loading file
-# datafile = 'PCAData.mat'
-datafile = 'cars.mat'
+datafile = 'PCAData.mat'
 points = scipy.io.loadmat( datafile )
 
-# print shape of original data
 X = points['X'] 
-loaded = X.copy()
-X = np.delete(X, range(7), axis=1)
 print('Printing data in X...')
+print(X)
 m, n = X.shape
 
 print(m, n)
-original = X.copy()
 
 SumX = np.sum(X, axis =0)
 meanX = np.mean(X,axis =0)
 stdX = np.std(X,axis =0)
 
-# print(meanX)
-# print(stdX)
-# print(SumX/50)
+print(meanX)
+print(stdX)
+#print(SumX/50)
 
 meanXReplicate = np.tile(meanX,(m,1))
 stdXReplicate = np.tile(stdX,(m,1))
-# print(meanXReplicate)
-
+#print(meanXReplicate)
 X = normalize(X,meanXReplicate,stdXReplicate)
 
-# print(X)
-# meanX = np.round(np.mean(X,axis =0),2)
-# stdX = np.std(X,axis =0)
-# print(meanX)
-# print(stdX)
+print(X)
+meanX = np.round(np.mean(X,axis =0),2)
+stdX = np.std(X,axis =0)
 
-pcaInfo = pca(X)
-pcaX = pcaInfo[0]
-eigenvectors = pcaInfo[2]
-# print(pcaX)
+print(meanX)
+print(stdX)
+
+pcaX = pca(X)
+print(pcaX)
 
 m, n = pcaX.shape
 
 print(m, n)
-
-plt.scatter(pcaX[:,0], pcaX[:,0])
-plt.plot((0, eigenvectors[0][0]), (0, eigenvectors[1][0]), c='red')
-plt.plot((0, eigenvectors[0][1]), (0, eigenvectors[1][1]), c='green')
-plt.show()
 

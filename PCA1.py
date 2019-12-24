@@ -34,6 +34,17 @@ def pca(X):
     X_pca = np.dot(X, eigen_vectors)
     return [X_pca, eigen_values, eigen_vectors]
 
+def getFeatureVectors(eigenValues, eigenVectors, featureCount):
+
+    featureVectors = []
+    featureIndexes = np.argsort(eigenValues)
+    primary = np.flip(featureIndexes[-1*featureCount:])
+
+    for fIndex in primary:
+        featureVectors.append(eigenVectors[fIndex])
+    
+    return featureVectors
+
 # loading file
 # datafile = 'PCAData.mat'
 datafile = 'cars.mat'
@@ -44,6 +55,9 @@ X = points['X']
 loaded = X.copy()
 X = np.delete(X, range(7), axis=1)
 print('Printing data in X...')
+print(X)
+# testing
+# X = np.array([[1, 2, 5], [3, 4, 6]])
 m, n = X.shape
 
 print(m, n)
@@ -71,15 +85,18 @@ X = normalize(X,meanXReplicate,stdXReplicate)
 
 pcaInfo = pca(X)
 pcaX = pcaInfo[0]
-eigenvectors = pcaInfo[2]
+eigenValues = pcaInfo[1]
+eigenVectors = pcaInfo[2]
+
+fVectors = getFeatureVectors(eigenValues, eigenVectors, 2)
 # print(pcaX)
 
 m, n = pcaX.shape
 
 print(m, n)
 
-plt.scatter(pcaX[:,0], pcaX[:,0])
-plt.plot((0, eigenvectors[0][0]), (0, eigenvectors[1][0]), c='red')
-plt.plot((0, eigenvectors[0][1]), (0, eigenvectors[1][1]), c='green')
+plt.scatter(pcaX[:,0], pcaX[:,1])
+plt.plot((0, fVectors[0][0]), (0, fVectors[1][0]), c='red')
+plt.plot((0, fVectors[0][1]), (0, fVectors[1][1]), c='green')
 plt.show()
 

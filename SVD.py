@@ -24,12 +24,11 @@ def loadData(dataFile):
     X = np.delete(X, range(7), axis=1)
     #print('Printing data in X...')
     #print(X)
-    m, n = X.shape
+    m = X.shape
 
     #print(m, n)
     original = X.copy()
 
-    SumX = np.sum(X, axis = 0)
     meanX = np.mean(X, axis = 0)
     stdX = np.std(X, axis = 0)
 
@@ -63,17 +62,22 @@ def reduceDimension(U, S, Vh, featureCount):
     newU = U.copy()
     changeIndex = range(featureCount, U.shape[1])
     newU[:, changeIndex] = 0
+    # newU = np.delete(newU, changeIndex, axis = 1)
 
     newS = S.copy()
     changeIndex = range(featureCount, S.shape[1])
     newS[:, changeIndex] = 0
+    # newS = np.delete(newS, changeIndex, axis = 0)
+    # newS = np.delete(newS, changeIndex, axis = 1)
 
     newVh = Vh.copy()
+    changeIndex = range(featureCount, Vh.shape[0])
     for row in range(featureCount, Vh.shape[0]):
         for col in range(len(newVh[row])):
             newVh[row][col] = 0
-    
-    return (newU, newS, newVh)
+    # newVh = np.delete(newVh, changeIndex, axis = 0)
+
+    return (newU.real, newS.real, newVh.real)
 
 #X =np.array([[3, 1, 1], [-1, 3, 1]])
 #X =np.array([[6, 2, 7, 9], [2, 3, 8, 10]])
@@ -82,5 +86,6 @@ U, S, Vh, recon = svd(X)
 #print(recon)
 U, S, Vh = reduceDimension(U, S, Vh, featureCount)
 recon = U @ S @ Vh.T
+recon = np.delete(recon, range(2, len(recon[0])), axis = 1)
 print(recon)
 

@@ -24,12 +24,11 @@ def loadData(dataFile):
     X = np.delete(X, range(7), axis=1)
     #print('Printing data in X...')
     #print(X)
-    m, n = X.shape
+    m = X.shape
 
     #print(m, n)
     original = X.copy()
 
-    SumX = np.sum(X, axis = 0)
     meanX = np.mean(X, axis = 0)
     stdX = np.std(X, axis = 0)
 
@@ -50,7 +49,7 @@ X, original = loadData(dataFile)
 # *** PCA START *** 
 def pca(X): 
 
-    m, n = X.shape 
+    m = X.shape 
     
     # Compute covariance matrix 
     C = np.dot(X.T, X) / (m-1)
@@ -82,10 +81,7 @@ def getFeatureMatrix(eigenValues, eigenVectors, featureCount):
 # print(meanX)
 # print(stdX)
 
-pcaInfo = pca(X)
-pcaX = pcaInfo[0]
-eigenValues = pcaInfo[1]
-eigenVectors = pcaInfo[2]
+pcaX, eigenValues, eigenVectors = pca(X)
 
 featureMatrix = getFeatureMatrix(eigenValues, eigenVectors, featureCount)
 featureMatrixT = featureMatrix.T

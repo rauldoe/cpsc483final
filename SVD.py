@@ -1,93 +1,86 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import scipy.io #Used to load *.mat files
 
-def getLambdas(eigenValues, shape):
-    lambdaMatrix = np.zeros(shape)
-    for idx, eigenValue in enumerate(eigenValues):
-        lambdaMatrix[idx][idx] = eigenValue
+dataFile = 'cars.mat'
+featureCount = 2
 
-    return np.sqrt(lambdaMatrix)
+def normalize(X,meanX,stdX):
+    
+    
+    X = (X-meanX)/stdX
+        
+    return X
 
-def sortEigen(eigenValues, eigenVectors):
+def loadData(dataFile):
+    # loading file
+    # datafile = 'PCAData.mat'
+    # datafile = 'cars.mat'
+    points = scipy.io.loadmat( dataFile )
 
-    sortedIndexes = np.argsort(eigenValues)[::-1]
-    return (eigenValues[sortedIndexes], eigenVectors[:,sortedIndexes])
+    # print shape of original data
+    X = points['X'] 
+    # loaded = X.copy()
+    X = np.delete(X, range(7), axis=1)
+    #print('Printing data in X...')
+    #print(X)
+    m, n = X.shape
 
-decimalPlaces = 5
+    #print(m, n)
+    original = X.copy()
 
-A = np.array([[5, 1], [3, 3]])
+    SumX = np.sum(X, axis = 0)
+    meanX = np.mean(X, axis = 0)
+    stdX = np.std(X, axis = 0)
 
-eValues, eVectors = np.linalg.eig(A)
+    # print(meanX)
+    # print(stdX)
+    # print(SumX/50)
 
+    meanXReplicate = np.tile(meanX,(m,1))
+    stdXReplicate = np.tile(stdX,(m,1))
+    # print(meanXReplicate)
 
-eVectors = eVectors.T
-#print(eVectors)
-# print (eValues)
+    X = normalize(X,meanXReplicate,stdXReplicate)
 
-# print(np.dot(A, eVectors[0].T))
-# print(np.diag(eValues))
-lambdas = np.diag(eValues)
-V = eVectors.T
+    return (X, original)
 
-V_inv = np.linalg.inv(V)
+X, original = loadData(dataFile)
 
-# assert A == V.dot(lambdas).dot(V_inv)
-print(V.dot(lambdas).dot(V_inv))
+# *** SVD START *** 
+def svd(X):
+    aat = X @ X.T
+    eigenValues_aat, U = np.linalg.eig(aat)
+    S = np.diag(np.sqrt(eigenValues_aat))
+    Vh = X.T @ U @ np.linalg.inv(S)
+    recon = None
+    #recon = U @ S @ Vh.T
+    
+    return (U, S, Vh, recon)
 
+def reduceDimension(U, S, Vh, featureCount):
+    
+    newU = U.copy()
+    changeIndex = range(featureCount, U.shape[1])
+    newU[:, changeIndex] = 0
 
+    newS = S.copy()
+    changeIndex = range(featureCount, S.shape[1])
+    newS[:, changeIndex] = 0
 
+    newVh = Vh.copy()
+    for row in range(featureCount, Vh.shape[0]):
+        for col in range(len(newVh[row])):
+            newVh[row][col] = 0
+    
+    return (newU, newS, newVh)
 
-# A = np.array([[6, 2, 7, 9], [2, 3, 8, 10]])
-A = np.array([[3, -2], [1, 4]])
-A = np.array([[3, 2, 2], [2, 3, -2]])
-# eigVals, eigVecs = np.linalg.eig(A)
-
-# A * (A Transpose)
-aat = np.dot(A, A.T)
-#print(aat)
-eigVals_aat, eigVecs_aat = np.linalg.eig(aat)
-eigVals_aat = np.sqrt(np.round(eigVals_aat, decimals=decimalPlaces))
-eigVecs_aat = eigVecs_aat.T
-eigVals_aat, eigVecs_aat = sortEigen(eigVals_aat, eigVecs_aat)
-
-# (A Transpose) * A
-ata = np.dot(A.T, A)
-#print(ata)
-eigVals_ata, eigVecs_ata = np.linalg.eig(ata)
-eigVals_ata = np.sqrt(np.round(eigVals_ata, decimals=decimalPlaces))
-eigVecs_ata = eigVecs_ata.T
-eigVals_ata, eigVecs_ata = sortEigen(eigVals_ata, eigVecs_ata)
-
-
-lambdaMatrix = getLambdas(eigVals_aat, A.shape)
-#print(lambdaMatrix)
-
-V = eigVecs_aat
-UT = eigVecs_ata
-
-# assert A == V.dot(lambdas).dot(V_inv)
-print(V.dot(lambdaMatrix).dot(UT.T))
-
-u, s, vh = np.linalg.svd(A, full_matrices=False)
-
-#print(u @ np.diag(s) @ vh)
-
-# A = np.array([[3, 1, 1], [-1, 3, 1]])
-# A = np.array([[6, 2, 7, 9], [2, 3, 8, 10]])
-# temp = A.dot(A.T)
-# S, U = np.linalg.eig(temp)
-# S = np.diag(np.sqrt(S))
-# V = A.T.dot(U).dot(np.linalg.inv(S))
-# recon = np.dot(U, S).dot(V.T)
-# print(recon)
-
-A = np.array([[3, 1, 1], [-1, 3, 1]])
-A = np.array([[6, 2, 7, 9], [2, 3, 8, 10]])
-A = np.array([[6, 2, 7, 9, 11], [2, 3, 8, 10, 12], [63, 32, 73, 39, 113]])
-
-aat = np.dot(A, A.T)
-eigVals_aat, eigVecs_aat = np.linalg.eig(aat)
-lambdaMatrix = np.diag(np.sqrt(eigVals_aat))
-V = A.T.dot(eigVecs_aat).dot(np.linalg.inv(lambdaMatrix))
-recon = np.dot(eigVecs_aat, lambdaMatrix).dot(V.T)
+#X =np.array([[3, 1, 1], [-1, 3, 1]])
+#X =np.array([[6, 2, 7, 9], [2, 3, 8, 10]])
+#X =np.array([[6, 2, 7, 9, 11], [2, 3, 8, 10, 12], [63, 32, 73, 39, 113]])
+U, S, Vh, recon = svd(X)
+#print(recon)
+U, S, Vh = reduceDimension(U, S, Vh, featureCount)
+recon = U @ S @ Vh.T
 print(recon)
 

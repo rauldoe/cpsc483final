@@ -1,23 +1,53 @@
-
-# clear; python PCA1.py;
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 12 12:07:40 2019
-
-@author: shlakhanpal
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io #Used to load *.mat files
 
+dataFile = 'cars.mat'
+featureCount = 2
+
 def normalize(X,meanX,stdX):
     
     
-    X = (X-meanXReplicate)/stdXReplicate
+    X = (X-meanX)/stdX
         
     return X
-    
+
+def loadData(dataFile):
+    # loading file
+    # datafile = 'PCAData.mat'
+    # datafile = 'cars.mat'
+    points = scipy.io.loadmat( dataFile )
+
+    # print shape of original data
+    X = points['X'] 
+    # loaded = X.copy()
+    X = np.delete(X, range(7), axis=1)
+    #print('Printing data in X...')
+    #print(X)
+    m, n = X.shape
+
+    #print(m, n)
+    original = X.copy()
+
+    SumX = np.sum(X, axis = 0)
+    meanX = np.mean(X, axis = 0)
+    stdX = np.std(X, axis = 0)
+
+    # print(meanX)
+    # print(stdX)
+    # print(SumX/50)
+
+    meanXReplicate = np.tile(meanX,(m,1))
+    stdXReplicate = np.tile(stdX,(m,1))
+    # print(meanXReplicate)
+
+    X = normalize(X,meanXReplicate,stdXReplicate)
+
+    return (X, original)
+
+X, original = loadData(dataFile)
+
+# *** PCA START *** 
 def pca(X): 
 
     m, n = X.shape 
@@ -46,41 +76,6 @@ def getFeatureMatrix(eigenValues, eigenVectors, featureCount):
     
     return np.array(featureMatrix)
 
-featureCount = 2
-
-# loading file
-# datafile = 'PCAData.mat'
-datafile = 'cars.mat'
-points = scipy.io.loadmat( datafile )
-
-# print shape of original data
-X = points['X'] 
-loaded = X.copy()
-X = np.delete(X, range(7), axis=1)
-print('Printing data in X...')
-print(X)
-# testing
-X = np.array([[1, 2, 5, 10], [3, 4, 6, 11], [7, 8, 9, 12]])
-m, n = X.shape
-
-print(m, n)
-original = X.copy()
-
-SumX = np.sum(X, axis = 0)
-meanX = np.mean(X, axis = 0)
-stdX = np.std(X, axis = 0)
-
-# print(meanX)
-# print(stdX)
-# print(SumX/50)
-
-meanXReplicate = np.tile(meanX,(m,1))
-stdXReplicate = np.tile(stdX,(m,1))
-# print(meanXReplicate)
-
-X = normalize(X,meanXReplicate,stdXReplicate)
-
-# *** PCA START *** 
 # print(X)
 # meanX = np.round(np.mean(X,axis =0),2)
 # stdX = np.std(X,axis =0)

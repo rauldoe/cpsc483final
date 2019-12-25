@@ -24,7 +24,7 @@ def loadData(dataFile):
     X = np.delete(X, range(7), axis=1)
     #print('Printing data in X...')
     #print(X)
-    m = X.shape
+    m, _ = X.shape
 
     #print(m, n)
     original = X.copy()
@@ -44,12 +44,25 @@ def loadData(dataFile):
 
     return (X, original)
 
+def processSummary(pc, original, transformed):
+    print("Display the principal components from both PCA and SVD.")
+    print(pc)
+    print("Project the original data instances (points) onto the principal components resulting from both SVD and PCA. ")
+    print("Plot the two principal components from SVD ( PC1, labeled as such, capturing the maximum variance from the data, and PC2, labeled as such, the next one) and the projections onto them of the original data.")
+    plt.scatter(original[:,0], original[:,1])
+    plt.plot(pc[:,0], pc[:,1], c='red')
+    plt.scatter(transformed[:,0], transformed[:,1], c='green')
+    # plt.plot((0, fVectors[0][1]), (0, fVectors[1][1]), c='green')
+    plt.show()
+
 X, original = loadData(dataFile)
+print("Printing original data")
+print(X)
 
 # *** PCA START *** 
 def pca(X): 
 
-    m = X.shape 
+    m, _ = X.shape 
     
     # Compute covariance matrix 
     C = np.dot(X.T, X) / (m-1)
@@ -57,7 +70,7 @@ def pca(X):
     # Eigen decomposition 
     eigen_values, eigen_vectors = np.linalg.eig(C) 
      
-    print (eigen_vectors)
+    # print (eigen_vectors)
     
     # Project X onto PC space
     X_pca = np.dot(X, eigen_vectors)
@@ -75,12 +88,6 @@ def getFeatureMatrix(eigenValues, eigenVectors, featureCount):
     
     return np.array(featureMatrix)
 
-# print(X)
-# meanX = np.round(np.mean(X,axis =0),2)
-# stdX = np.std(X,axis =0)
-# print(meanX)
-# print(stdX)
-
 pcaX, eigenValues, eigenVectors = pca(X)
 
 featureMatrix = getFeatureMatrix(eigenValues, eigenVectors, featureCount)
@@ -88,16 +95,21 @@ featureMatrixT = featureMatrix.T
 
 # We want the transformed matrix to be a row_count x 2
 transformedMatrix = (np.dot(featureMatrix, original.T)).T
-# *** PCA END *** 
 
-print(transformedMatrix)
+#print(transformedMatrix)
 
 m, n = transformedMatrix.shape
 
-print(m, n)
+#print(m, n)
 
 # plt.scatter(pcaX[:,0], pcaX[:,1])
 # plt.plot((0, fVectors[0][0]), (0, fVectors[1][0]), c='red')
 # plt.plot((0, fVectors[0][1]), (0, fVectors[1][1]), c='green')
 # plt.show()
 
+pc = featureMatrix
+transformed = transformedMatrix
+# *** PCA END *** 
+
+print("After PCA, Printing original data projected onto principal components")
+processSummary(pc, original, transformed)

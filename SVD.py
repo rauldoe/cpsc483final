@@ -24,7 +24,7 @@ def loadData(dataFile):
     X = np.delete(X, range(7), axis=1)
     #print('Printing data in X...')
     #print(X)
-    m = X.shape
+    m, _ = X.shape
 
     #print(m, n)
     original = X.copy()
@@ -44,7 +44,20 @@ def loadData(dataFile):
 
     return (X, original)
 
+def processSummary(pc, original, transformed):
+    print("Display the principal components from both PCA and SVD.")
+    print(pc)
+    print("Project the original data instances (points) onto the principal components resulting from both SVD and PCA. ")
+    print("Plot the two principal components from SVD ( PC1, labeled as such, capturing the maximum variance from the data, and PC2, labeled as such, the next one) and the projections onto them of the original data.")
+    plt.scatter(original[:,0], original[:,1])
+    plt.plot(pc[:,0], pc[:,1], c='red')
+    plt.scatter(transformed[:,0], transformed[:,1], c='green')
+    # plt.plot((0, fVectors[0][1]), (0, fVectors[1][1]), c='green')
+    plt.show()
+
 X, original = loadData(dataFile)
+print("Printing original data")
+print(X)
 
 # *** SVD START *** 
 def svd(X):
@@ -87,5 +100,12 @@ U, S, Vh, recon = svd(X)
 U, S, Vh = reduceDimension(U, S, Vh, featureCount)
 recon = U @ S @ Vh.T
 recon = np.delete(recon, range(2, len(recon[0])), axis = 1)
-print(recon)
+#print(recon)
+
+pc = np.delete(U, range(2, len(U[0])), axis = 1)
+transformed = recon
+# *** SVD END *** 
+
+print("After SVD, Printing original data projected onto principal components")
+processSummary(pc, original, transformed)
 

@@ -1,0 +1,22 @@
+Printing original data
+[[ 0.5342275   0.47954631  0.36782701 ...  1.10042148  0.91058658
+   0.21507724]
+ [ 0.65326826  0.59622579  0.36782701 ...  1.10042148  0.91058658
+   0.21507724]
+ [ 0.18852702  0.16200584  0.36782701 ... -0.17123347  0.30548333
+   1.70141457]
+ ...
+ [-0.36022806 -0.32440105 -1.21163543 ... -0.87770844 -0.37525783
+  -0.97399263]
+ [ 0.09715245  0.14942056 -0.61933701 ...  0.25265151  0.07856961
+   0.5123447 ]
+ [ 0.40706455  0.47042898 -0.22447141 ...  0.81783149  0.30548333
+   1.10687963]]
+After PCA, Printing original data projected onto principal components
+Display the principal components from both PCA and SVD.
+[[ 0.26375044  0.4685087  -0.25497414 -0.27988372  0.04974519 -0.03249278
+   0.70929441  0.22241966 -0.0242228   0.05173334 -0.09069774]
+ [ 0.26231864  0.47014659 -0.25725039 -0.28771958  0.03681996 -0.04855776
+  -0.70464731  0.21944375 -0.02829668  0.06692496 -0.08668442]]
+Project the original data instances (points) onto the principal components resulting from both SVD and PCA.
+Plot the two principal components from SVD ( PC1, labeled as such, capturing the maximum variance from the data, and PC2, labeled as such, the next one) and the projections onto them of the original data.
